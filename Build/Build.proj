@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Main" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+	<PropertyGroup>
+		<Configuration Condition=" $(Configuration) == '' ">Debug</Configuration>
+		<NUnitConsolePath>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\Packages\NUnit.Runners\tools\NUnit-Console.exe))</NUnitConsolePath>
+		<AssemblyMajorVersion Condition=" $(AssemblyMajorVersion) == '' ">1</AssemblyMajorVersion>
+        <AssemblyMinorVersion Condition=" $(AssemblyMinorVersion) == '' ">0</AssemblyMinorVersion>
+        <AssemblyBuildNumber Condition=" $(AssemblyBuildNumber) == '' " >0</AssemblyBuildNumber>
+        <AssemblyRevision Condition=" $(AssemblyRevision) == '' " >0</AssemblyRevision>
+        <AssemblyFullVersion>$(AssemblyMajorVersion).$(AssemblyMinorVersion).$(AssemblyBuildNumber).$(AssemblyRevision)</AssemblyFullVersion>
+        <NuGetFeed>https://www.ikclife.com/KCLNugetFeed/</NuGetFeed>
+        <NuGetAPIKey></NuGetAPIKey>
+        <NuGetPublish Condition=" '$(NuGetPublish)' == '' ">False</NuGetPublish>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Projects Include="..\Mono.TextTemplating\Mono.TextTemplating.csproj"/>
+		<Projects Include="..\Mono.TextTemplating.Tests\Mono.TextTemplating.Tests.csproj"/>
+		<Projects Include="..\Mono.TextTemplating.Utility\Mono.TextTemplating.Utility.csproj"/>
+		<Projects Include="..\TextTransform\TextTransform.csproj"/>
+		<Projects Include="..\AcceptanceTests\AcceptanceTests.csproj"/>
+		<ProjectsToTest Include="..\Mono.TextTemplating.Tests\bin\$(Configuration)\Mono.TextTemplating.Tests.dll"/>
+		<ProjectsToTest Include="..\AcceptanceTests\bin\$(Configuration)\Acceptance.Tests.dll"/>
+		<ProjectsWithFeatures Include="..\AcceptanceTests\AcceptanceTests.csproj"/>
+		<AssemblyInfoFiles Include="..\**\AssemblyInfo.cs" />
+		<NuGetSpec Include="*.nuspec"/>
+	</ItemGroup>
+
+	<Target Name="Main">
+		<CallTarget Targets="Validate"/>
+		<CallTarget Targets="ResolveDependencyPackages" />
+		<MSBuild.ExtensionPack.Framework.AssemblyInfo 	AssemblyInfoFiles="@(AssemblyInfoFiles)" 
+														AssemblyVersion="$(AssemblyFullVersion)"
+														AssemblyFileVersion="$(AssemblyFullVersion)"/>
+		<CallTarget Targets="Build" />
+		<CallTarget Targets="NUnit" />
+		<CallTarget Targets="GenerateFeatureReport" />
+		<CallTarget Targets="NuGet_Pack" />
+		<CallTarget Targets="NuGet_Publish" />
+		<CallTarget Targets="NuGet_Clean" />
+	</Target>
+
+	<Target Name="Validate">
+		<IsExecutableAvailable ExeName="nuget.exe">			
+			<Output TaskParameter="Result" PropertyName="IsExecutableAvailable"/>
+		</IsExecutableAvailable>
+		<Message Text="Result = $(IsExecutableAvailable)" />
+		<Error 	Condition=" '$(IsExecutableAvailable)' == 'False' "
+				Text="If you are getting this error, it is because nuget.exe is not available from the command line.  You will need to make sure to download the nuget.exe command line utility from www.nuget.org and place it's location within this computer's 'Path' environment variable"/>
+		<Error Condition=" '$(NuGetPublish)' == 'True' AND '$(NuGetAPIKey)' == ''"
+				Text="You must supply an API Key for the $(NuGetFeed) in order to publish your nuget package."/>
+	</Target>
+
+	<Target Name="Build">
+		<MSBuild Projects="@(Projects)" Properties="Configuration=$(Configuration)" />
+	</Target>
+
+	<Target Name="Clean">
+		<MSBuild Projects="@(Projects)" Properties="Configuration=$(Configuration)" Targets="Clean" />
+	</Target>
+
+	<Target Name="ReBuild">
+		<CallTarget Targets="Clean;Build"/>
+	</Target>
+
+	<Target Name="NUnit">
+		<Message Text="$(NUnitConsolePath)"/>
+		<Message Text="%(ProjectsToTest.FullPath)"/>
+		<Message Text="%(ProjectsToTest.RootDir)%(ProjectsToTest.Directory)"/>
+		<Exec Command="&quot;$(NUnitConsolePath)&quot; &quot;%(ProjectsToTest.FullPath)&quot; -xml:%(ProjectsToTest.Filename)_TestResults.xml" WorkingDirectory="%(ProjectsToTest.RootDir)%(ProjectsToTest.Directory)" />
+	</Target>
+
+	<Target Name="GenerateFeatureReport">
+		<MSBuild Projects="@(ProjectsWithFeatures)" Targets="GenerateExecutionReport" />	
+	</Target>
+
+	<Target Name="NuGet_Pack" Condition="$(Configuration) == 'Release'">
+		<Message Text="Packing %(NuGetSpec.FullPath)"/>
+		<Exec Command="nuget pack &quot;%(NuGetSpec.FullPath)&quot; -Version $(AssemblyFullVersion)" 
+			WorkingDirectory="%(NuGetSpec.RootDir)%(NuGetSpec.Directory)"
+			IgnoreStandardErrorWarningFormat="true" />
+	</Target>
+	
+	<Target Name="NuGet_Publish" Condition="$(Configuration) == 'Release' AND $(NuGetPublish) == 'True'">
+		<ItemGroup>
+			<NuGetPackage Include="*.nupkg"/>
+		</ItemGroup>
+		<Message Text="Publishing %(NuGetPackage.FullPath)"/>
+		<Exec Command="nuget push &quot;%(NuGetPackage.FullPath)&quot; -s $(NuGetFeed) $(NuGetAPIKey)" 
+			WorkingDirectory="%(NuGetPackage.RootDir)%(NuGetPackage.Directory)"/>
+	</Target>
+
+	<Target Name="NuGet_Clean" Condition="$(Configuration) == 'Release'">
+		<ItemGroup>
+			<NuGetPackage Include="*.nupkg"/>
+		</ItemGroup>
+		<Delete Files="@(NuGetPackage)"/>
+	</Target>
+
+	<Import Project="$(MSBuildThisFileDirectory)NuGet.targets" />
+	<Import Project="$(MSBuildThisFileDirectory)ValidateEnvironment.targets" />
+	<UsingTask AssemblyFile="$(MSBuildThisFileDirectory)MSBuildExtensions\MSBuild.ExtensionPack.dll" TaskName="MSBuild.ExtensionPack.Framework.AssemblyInfo"/>
+</Project>

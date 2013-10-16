@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>KCLTextTemplating</id>
+        <version>1.0.0</version>
+        <title>KCL Text Templating</title>
+        <authors>5 South</authors>
+        <owners>Kansas City Life Insurance Company</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A Stand Alone Port of Mono Develop's Text Templating Engine</description>
+    </metadata>
+    <files>
+        <file src="..\Mono.TextTemplating\bin\Release\Mono.TextTemplating.dll" target="lib\net40\Mono.TextTemplating.dll" />
+        <file src="..\Mono.TextTemplating.Utility\bin\Release\Mono.TextTemplating.Utility.dll" target="lib\net40\Mono.TextTemplating.Utility.dll" />
+        <file src="..\AcceptanceTests\KCLTextTemplating.targets" target="tools\KCLTextTemplating.targets" />
+        <file src="..\TextTransform\bin\Release\TextTransform.exe" target="tools\TextTransform.exe" />
+        <file src="..\Mono.TextTemplating\bin\Release\Mono.TextTemplating.dll" target="tools\Mono.TextTemplating.dll" />
+    </files>
+</package>

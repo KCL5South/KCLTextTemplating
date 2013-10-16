@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Main" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+	<PropertyGroup>
+        <AssemblyFile>$(MSBuildThisDirectory)MSBuildExtensions\MSBuild.ExtensionPack.TaskFactory.PowerShell.dll</AssemblyFile>
+    </PropertyGroup>
+
+    <UsingTask TaskFactory="PowershellTaskFactory" TaskName="IsExecutableAvailable" AssemblyFile="$(AssemblyFile)">
+    	<ParameterGroup>
+    		<ExeName Required="true" ParameterType="System.String"/>
+    		<Result Output="true"/>
+    	</ParameterGroup>
+    	<Task>
+    	<![CDATA[
+    		$Result = @($env:Path.Split(";") | where {
+				Test-Path (Join-Path $_ "$ExeName")
+			}).Length -gt 0	
+    	]]>	
+    	</Task>
+	</UsingTask>
+</Project>
