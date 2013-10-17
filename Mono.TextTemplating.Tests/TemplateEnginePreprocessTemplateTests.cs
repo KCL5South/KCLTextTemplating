@@ -352,7 +352,7 @@ namespace Templating {
         
         
         #line 11 ""d:\test\IncludedFile.tt""
-        this.Write(""Included Method Body Text Block\n"");
+        this.Write(""Included Method Body Text Block\r\n"");
 
         #line default
         #line hidden
@@ -369,13 +369,13 @@ namespace Templating {
             this.GenerationEnvironment = null;
             
             #line 1 """"
-            this.Write(""\n"");
+            this.Write(""\r\n"");
             
             #line default
             #line hidden
             
             #line 4 """"
-            this.Write(""Text Block 1\n"");
+            this.Write(""Text Block 1\r\n"");
             
             #line default
             #line hidden
@@ -389,19 +389,19 @@ namespace Templating {
             #line hidden
             
             #line 8 """"
-            this.Write(""Text Block 2\n"");
+            this.Write(""Text Block 2\r\n"");
             
             #line default
             #line hidden
             
             #line 1 ""d:\test\IncludedFile.tt""
-            this.Write(""\n"");
+            this.Write(""\r\n"");
             
             #line default
             #line hidden
             
             #line 4 ""d:\test\IncludedFile.tt""
-            this.Write(""Included Text Block 1\n"");
+            this.Write(""Included Text Block 1\r\n"");
             
             #line default
             #line hidden
@@ -413,13 +413,13 @@ namespace Templating {
             #line hidden
             
             #line 6 ""d:\test\IncludedFile.tt""
-            this.Write(""Included Text Block 2\n"");
+            this.Write(""Included Text Block 2\r\n"");
             
             #line default
             #line hidden
             
             #line 10 """"
-            this.Write(""Text Block 3\n"");
+            this.Write(""Text Block 3\r\n"");
             
             #line default
             #line hidden

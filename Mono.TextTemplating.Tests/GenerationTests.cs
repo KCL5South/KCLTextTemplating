@@ -48,16 +48,16 @@ namespace Mono.TextTemplating.Tests
 		[Test]
 		public void GenerateMacNewlines ()
 		{
-			string MacInput = ParsingTests.ParseSample1.Replace ("\n", "\r");
-			string MacOutput = OutputSample1.Replace ("\\n", "\\r").Replace ("\n", "\r");;
+			string MacInput = ParsingTests.ParseSample1.Replace ("\r\n", "\r");
+			string MacOutput = OutputSample1.Replace ("\\r\\n", "\\r").Replace ("\r\n", "\r");;
 			Generate (MacInput, MacOutput, "\r");
 		}
 		
 		[Test]
 		public void GenerateWindowsNewlines ()
 		{
-			string WinInput = ParsingTests.ParseSample1.Replace ("\n", "\r\n");
-			string WinOutput = OutputSample1.Replace ("\\n", "\\r\\n").Replace ("\n", "\r\n");
+			string WinInput = ParsingTests.ParseSample1;//.Replace ("\n", "\r\n");
+			string WinOutput = OutputSample1;//.Replace ("\\r\\n", "\\r\\n").Replace ("\n", "\r\n");
 			Generate (WinInput, WinOutput, "\r\n");
 		}
 		
@@ -130,7 +130,7 @@ baz \#>
             this.GenerationEnvironment = null;
             
             #line 2 """"
-            this.Write(""Line One\nLine Two\n"");
+            this.Write(""Line One\r\nLine Two\r\n"");
             
             #line default
             #line hidden
@@ -156,7 +156,7 @@ foo
             #line hidden
             
             #line 7 """"
-            this.Write(""\nLine Four\n"");
+            this.Write(""\r\nLine Four\r\n"");
             
             #line default
             #line hidden

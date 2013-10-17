@@ -59,25 +59,25 @@ baz \#>
 			Assert.IsTrue (tk.Advance ());
 			Assert.AreEqual (new Location (tf, 1, 1), tk.Location);
 			Assert.AreEqual (State.Content, tk.State);
-			Assert.AreEqual ("", tk.Value);
+			Assert.AreEqual ("", tk.Value);
 			Assert.IsTrue (tk.Advance ());
 			Assert.AreEqual (State.Directive, tk.State);
 			Assert.IsTrue (tk.Advance ());
 			Assert.AreEqual (new Location (tf, 1, 5), tk.Location);
 			Assert.AreEqual (State.DirectiveName, tk.State);
-			Assert.AreEqual ("template", tk.Value);
+			Assert.AreEqual ("template", tk.Value);
 			Assert.IsTrue (tk.Advance ());
 			Assert.AreEqual (State.Directive, tk.State);
 			Assert.IsTrue (tk.Advance ());
 			Assert.AreEqual (new Location (tf, 1, 14), tk.Location);
 			Assert.AreEqual (State.DirectiveName, tk.State);
-			Assert.AreEqual ("language", tk.Value);
+			Assert.AreEqual ("language", tk.Value);
 			Assert.IsTrue (tk.Advance ());
 			Assert.AreEqual (State.Directive, tk.State);
 			Assert.IsTrue (tk.Advance ());
 			Assert.AreEqual (State.DirectiveValue, tk.State);
 			Assert.AreEqual (new Location (tf, 1, 23), tk.Location);
-			Assert.AreEqual ("C#v3.5", tk.Value);
+			Assert.AreEqual ("C#v3.5", tk.Value);
 			Assert.IsTrue (tk.Advance ());
 			Assert.AreEqual (State.Directive, tk.State);
 			
@@ -85,7 +85,7 @@ baz \#>
 			Assert.IsTrue (tk.Advance ());
 			Assert.AreEqual (new Location (tf, 2, 1), tk.Location);
 			Assert.AreEqual (State.Content, tk.State);
-			Assert.AreEqual ("Line One\nLine Two\n", tk.Value);
+			Assert.AreEqual ("Line One\r\nLine Two\r\n", tk.Value);
 			
 			//line 4, 5, 6
 			Assert.IsTrue (tk.Advance ());
@@ -93,25 +93,25 @@ baz \#>
 			Assert.AreEqual (new Location (tf, 4, 3), tk.Location);
 			Assert.AreEqual (new Location (tf, 6, 3), tk.TagEndLocation);
 			Assert.AreEqual (State.Block, tk.State);
-			Assert.AreEqual ("\nfoo\n", tk.Value);
+			Assert.AreEqual ("\r\nfoo\r\n", tk.Value);
 			
 			//line 7
 			Assert.IsTrue (tk.Advance ());
 			Assert.AreEqual (new Location (tf, 7, 1), tk.Location);
 			Assert.AreEqual (State.Content, tk.State);
-			Assert.AreEqual ("Line Three ", tk.Value);
+			Assert.AreEqual ("Line Three ", tk.Value);
 			Assert.IsTrue (tk.Advance ());
 			Assert.AreEqual (new Location (tf, 7, 12), tk.TagStartLocation);
 			Assert.AreEqual (new Location (tf, 7, 15), tk.Location);
 			Assert.AreEqual (new Location (tf, 7, 22), tk.TagEndLocation);
 			Assert.AreEqual (State.Expression, tk.State);
-			Assert.AreEqual (" bar ", tk.Value);
+			Assert.AreEqual (" bar ", tk.Value);
 			
 			//line 8
 			Assert.IsTrue (tk.Advance ());
 			Assert.AreEqual (new Location (tf, 7, 22), tk.Location);
 			Assert.AreEqual (State.Content, tk.State);
-			Assert.AreEqual ("\nLine Four\n", tk.Value);
+			Assert.AreEqual ("\r\nLine Four\r\n", tk.Value);
 			
 			//line 9, 10, 11
 			Assert.IsTrue (tk.Advance ());
@@ -119,13 +119,13 @@ baz \#>
 			Assert.AreEqual (new Location (tf, 9, 4), tk.Location);
 			Assert.AreEqual (new Location (tf, 11, 3), tk.TagEndLocation);
 			Assert.AreEqual (State.Helper, tk.State);
-			Assert.AreEqual (" \nbaz \\#>\n", tk.Value);
+			Assert.AreEqual (" \r\nbaz \\#>\r\n", tk.Value);
 			
 			//line 12
 			Assert.IsTrue (tk.Advance ());
 			Assert.AreEqual (new Location (tf, 12, 1), tk.Location);
 			Assert.AreEqual (State.Content, tk.State);
-			Assert.AreEqual ("", tk.Value);
+			Assert.AreEqual ("", tk.Value);
 			
 			//EOF
 			Assert.IsFalse (tk.Advance ());
@@ -156,12 +156,12 @@ baz \#>
 			Assert.AreEqual (new Location (tf, 1, 1), dirs[0].TagStartLocation);
 			Assert.AreEqual (new Location (tf, 1, 34), dirs[0].EndLocation);
 			
-			Assert.AreEqual ("Line One\nLine Two\n", content[0].Text);
-			Assert.AreEqual ("\nfoo\n", content[1].Text);
+			Assert.AreEqual ("Line One\r\nLine Two\r\n", content[0].Text);
+			Assert.AreEqual ("\r\nfoo\r\n", content[1].Text);
 			Assert.AreEqual ("Line Three ", content[2].Text);
 			Assert.AreEqual (" bar ", content[3].Text);
-			Assert.AreEqual ("\nLine Four\n", content[4].Text);
-			Assert.AreEqual (" \nbaz \\#>\n", content[5].Text);
+			Assert.AreEqual ("\r\nLine Four\r\n", content[4].Text);
+			Assert.AreEqual (" \r\nbaz \\#>\r\n", content[5].Text);
 			
 			Assert.AreEqual (SegmentType.Content, content[0].Type);
 			Assert.AreEqual (SegmentType.Block, content[1].Type);
