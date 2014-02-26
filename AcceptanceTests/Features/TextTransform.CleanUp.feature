@@ -20,8 +20,8 @@ Scenario: Cleaning up
 		<CallTarget Targets="KCLTextTemplating"/>
 	</Target>
 
-    <Import Project="KCLTextTemplating.targets"/>
     <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+    <Import Project="KCLTextTemplating.targets"/>
 </Project>
 	"""
 	And a template file called "Template.tt"
@@ -52,8 +52,8 @@ Scenario: Cleaning up against other code files
 		<CallTarget Targets="KCLTextTemplating"/>
 	</Target>
 
-    <Import Project="KCLTextTemplating.targets"/>
     <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+    <Import Project="KCLTextTemplating.targets"/>
 </Project>
 	"""
     And a template file called "Template.tt"
@@ -63,7 +63,11 @@ Scenario: Cleaning up against other code files
 <#@ template language="C#" debug="false" hostspecific="true"#>
 <#@ output extension=".cs"#>
 Some Random Text
-	"""
+    """
+    And the code file consists of:
+    """
+public class TestClass { }
+    """
 	When the target RunTemplates is ran
 	Then a file called "Template.cs" should exist
     When the project is cleaned

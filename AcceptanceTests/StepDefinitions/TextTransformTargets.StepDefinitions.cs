@@ -1,6 +1,7 @@
 using TechTalk.SpecFlow;
 using NUnit.Framework;
 using System.Diagnostics;
+using System.Linq;
 
 namespace AcceptanceTests.StepDefinitions
 {
@@ -12,9 +13,11 @@ namespace AcceptanceTests.StepDefinitions
 		public string TemplateFile { get; set; }
 		public string TemplateFileName { get; set; }
         public string CodeFileName { get; set; }
+		public string CodeFileContent { get; set; }
 		public string OutputFileName { get; set; }
 		public string ExecuteOutput { get; set; }
 		public bool DoesOutputExist { get; set; }
+		public string MSBuild { get; set; }
 		public FileSystem.TempDirectory TestDirectory { get; set; }
 
 		[Before]
@@ -26,6 +29,11 @@ namespace AcceptanceTests.StepDefinitions
 			{
 				System.IO.File.Copy(file, TestDirectory.Append(System.IO.Path.GetFileName(file)));
 			}
+
+			MSBuild = System.IO.Directory.GetFiles(@"C:\Windows\Microsoft.Net", "msbuild.exe", System.IO.SearchOption.AllDirectories).First();
+
+			if (string.IsNullOrWhiteSpace(MSBuild))
+				throw new System.Exception("Unable to find an instance of the MSBuild.exe executable.");
 		}
 
 		[After]
@@ -55,7 +63,15 @@ namespace AcceptanceTests.StepDefinitions
 		[Given(@"the template file consists of:")]
 		public void GetTemplateContent(string templateContent)
 		{
-			TemplateFile = templateContent;
+			TemplateFile = templateContent; 
+			System.IO.File.WriteAllText(TemplateFileName, TemplateFile);
+		}
+
+		[Given(@"the code file consists of:")]
+		public void GetCodeContent(string codeContent)
+		{
+			CodeFileContent = codeContent;
+			System.IO.File.WriteAllText(CodeFileName, CodeFileContent);
 		}
 
 		[Given(@"a file called ""(.*)"" exists")]
@@ -70,7 +86,6 @@ namespace AcceptanceTests.StepDefinitions
 		{
 			ProjectFileName = TestDirectory.Append("build.proj");
 			System.IO.File.WriteAllText(ProjectFileName, ProjectFile);
-			System.IO.File.WriteAllText(TemplateFileName, TemplateFile);
 
 			if(DoesOutputExist)
 			{
@@ -78,7 +93,7 @@ namespace AcceptanceTests.StepDefinitions
 			}
 
 			int exitCode = 0;
-			ExecuteOutput = Utility.ExecuteCmd(string.Format(@"msbuild ""{0}"" /clp:PerformanceSummary", ProjectFileName), out exitCode);
+			ExecuteOutput = Utility.ExecuteCmd(string.Format(@"""{0}"" ""{1}"" /clp:PerformanceSummary", MSBuild, ProjectFileName), out exitCode);
 
 			Assert.AreEqual(0, exitCode, ExecuteOutput);
 		}
@@ -88,7 +103,6 @@ namespace AcceptanceTests.StepDefinitions
 		{
 			ProjectFileName = TestDirectory.Append("build.proj");
 			System.IO.File.WriteAllText(ProjectFileName, ProjectFile);
-			System.IO.File.WriteAllText(TemplateFileName, TemplateFile);
 
 			if(DoesOutputExist)
 			{
@@ -96,17 +110,16 @@ namespace AcceptanceTests.StepDefinitions
 			}
 
 			int exitCode = 0;
-			ExecuteOutput = Utility.ExecuteCmd(string.Format(@"msbuild ""{0}"" /T:RunTemplates", ProjectFileName), out exitCode);
+			ExecuteOutput = Utility.ExecuteCmd(string.Format(@"""{0}"" ""{1}"" /T:RunTemplates", MSBuild, ProjectFileName), out exitCode);
 
 			Assert.AreEqual(0, exitCode, ExecuteOutput);
 		}
 
-		[Then("the project is cleaned")]
+		[When("the project is cleaned")]
 		public void CleanProject()
 		{
 			ProjectFileName = TestDirectory.Append("build.proj");
 			System.IO.File.WriteAllText(ProjectFileName, ProjectFile);
-			System.IO.File.WriteAllText(TemplateFileName, TemplateFile);
 
 			if(DoesOutputExist)
 			{
@@ -114,7 +127,7 @@ namespace AcceptanceTests.StepDefinitions
 			}
 
 			int exitCode = 0;
-			ExecuteOutput = Utility.ExecuteCmd(string.Format(@"msbuild ""{0}"" /T:Clean", ProjectFileName), out exitCode);
+			ExecuteOutput = Utility.ExecuteCmd(string.Format(@"""{0}"" ""{1}"" /T:Clean", MSBuild, ProjectFileName), out exitCode);
 
 			Assert.AreEqual(0, exitCode, ExecuteOutput);
 		}
