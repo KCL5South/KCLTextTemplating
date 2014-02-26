@@ -15,7 +15,7 @@ namespace AcceptanceTests
 			// arguments string and has "/C" prior to the command to tell
 			// the process to execute the command quickly without feedback.
 			ProcessStartInfo _info =
-				new ProcessStartInfo("cmd", @"/C " + arguments);
+				new ProcessStartInfo("cmd", "/C \"" + arguments + "\"");
 
 			//Set Working Directory
 			_info.WorkingDirectory = workingDirectory;
@@ -24,6 +24,7 @@ namespace AcceptanceTests
 			// standard output.  This means that it will be redirected
 			// to the Process.StandardOutput StreamReader.
 			_info.RedirectStandardOutput = true;
+			_info.RedirectStandardError = true;
 
 			// Set UseShellExecute to false.  This tells the process to run
 			// as a child of the invoking program, instead of on its own.
@@ -41,6 +42,10 @@ namespace AcceptanceTests
 
 			// Capture the results in a string
 			string _processResults = _p.StandardOutput.ReadToEnd();
+			string _processError = _p.StandardError.ReadToEnd();
+
+			if (!string.IsNullOrWhiteSpace(_processError))
+				throw new System.Exception(_processError);
 
 			_p.WaitForExit();
 			exitCode = _p.ExitCode;
