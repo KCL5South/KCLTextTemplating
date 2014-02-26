@@ -11,6 +11,7 @@ namespace AcceptanceTests.StepDefinitions
 		public string ProjectFileName { get; set; }
 		public string TemplateFile { get; set; }
 		public string TemplateFileName { get; set; }
+        public string CodeFileName { get; set; }
 		public string OutputFileName { get; set; }
 		public string ExecuteOutput { get; set; }
 		public bool DoesOutputExist { get; set; }
@@ -44,6 +45,12 @@ namespace AcceptanceTests.StepDefinitions
 		{
 			TemplateFileName = TestDirectory.Append(templateFile);
 		}
+        
+        [Given(@"a code file called ""(.*)""")]
+		public void GetCodeFile(string codeFile)
+		{
+			CodeFileName = TestDirectory.Append(codeFile);
+		}
 
 		[Given(@"the template file consists of:")]
 		public void GetTemplateContent(string templateContent)
@@ -72,6 +79,42 @@ namespace AcceptanceTests.StepDefinitions
 
 			int exitCode = 0;
 			ExecuteOutput = Utility.ExecuteCmd(string.Format(@"msbuild ""{0}"" /clp:PerformanceSummary", ProjectFileName), out exitCode);
+
+			Assert.AreEqual(0, exitCode, ExecuteOutput);
+		}
+
+		[When("the target RunTemplates is ran")]
+		public void RunTemplates()
+		{
+			ProjectFileName = TestDirectory.Append("build.proj");
+			System.IO.File.WriteAllText(ProjectFileName, ProjectFile);
+			System.IO.File.WriteAllText(TemplateFileName, TemplateFile);
+
+			if(DoesOutputExist)
+			{
+				System.IO.File.WriteAllText(OutputFileName, "");
+			}
+
+			int exitCode = 0;
+			ExecuteOutput = Utility.ExecuteCmd(string.Format(@"msbuild ""{0}"" /T:RunTemplates", ProjectFileName), out exitCode);
+
+			Assert.AreEqual(0, exitCode, ExecuteOutput);
+		}
+
+		[When("the project is cleaned")]
+		public void CleanProject()
+		{
+			ProjectFileName = TestDirectory.Append("build.proj");
+			System.IO.File.WriteAllText(ProjectFileName, ProjectFile);
+			System.IO.File.WriteAllText(TemplateFileName, TemplateFile);
+
+			if(DoesOutputExist)
+			{
+				System.IO.File.WriteAllText(OutputFileName, "");
+			}
+
+			int exitCode = 0;
+			ExecuteOutput = Utility.ExecuteCmd(string.Format(@"msbuild ""{0}"" /T:Clean", ProjectFileName), out exitCode);
 
 			Assert.AreEqual(0, exitCode, ExecuteOutput);
 		}
@@ -111,5 +154,11 @@ namespace AcceptanceTests.StepDefinitions
 		{
 			Assert.AreEqual(outputContent, System.IO.File.ReadAllText(OutputFileName), "The content of the output file is not correct.");
 		}
+
+        [Then("the code file should still exist.")]
+        public void CodeFileStillExists()
+        {
+            Assert.IsTrue(System.IO.File.Exists(CodeFileName));
+        }
 	}
 }
