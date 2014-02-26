@@ -29,8 +29,9 @@ namespace AcceptanceTests.StepDefinitions
 			{
 				System.IO.File.Copy(file, TestDirectory.Append(System.IO.Path.GetFileName(file)));
 			}
-
-			MSBuild = System.IO.Directory.GetFiles(@"C:\Windows\Microsoft.Net", "msbuild.exe", System.IO.SearchOption.AllDirectories).First();
+            
+            string net40Dir = System.IO.Directory.GetDirectories(@"C:\Windows\Microsoft.Net\Framework", "v4*").First();
+			MSBuild = System.IO.Directory.GetFiles(net40Dir, "msbuild.exe", System.IO.SearchOption.AllDirectories).First();
 
 			if (string.IsNullOrWhiteSpace(MSBuild))
 				throw new System.Exception("Unable to find an instance of the MSBuild.exe executable.");
