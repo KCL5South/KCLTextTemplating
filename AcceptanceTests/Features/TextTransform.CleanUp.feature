@@ -33,7 +33,7 @@ Some Random Text
 	"""
 	When the target RunTemplates is ran
 	Then a file called "Template.cs" should exist
-    Then the project is cleaned
+    When the project is cleaned
     Then there should be no output files 
 
 Scenario: Cleaning up against other code files
@@ -66,6 +66,6 @@ Some Random Text
 	"""
 	When the target RunTemplates is ran
 	Then a file called "Template.cs" should exist
-    Then the project is cleaned
+    When the project is cleaned
     Then there should be no output files
     And the code file should still exist.

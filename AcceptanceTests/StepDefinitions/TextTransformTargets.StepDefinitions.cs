@@ -101,7 +101,7 @@ namespace AcceptanceTests.StepDefinitions
 			Assert.AreEqual(0, exitCode, ExecuteOutput);
 		}
 
-		[When("the project is cleaned")]
+		[Then("the project is cleaned")]
 		public void CleanProject()
 		{
 			ProjectFileName = TestDirectory.Append("build.proj");
@@ -124,7 +124,7 @@ namespace AcceptanceTests.StepDefinitions
 		{
 			string expectedOutput = TestDirectory.Append(string.Format("{0}.cs", System.IO.Path.GetFileNameWithoutExtension(TemplateFileName)));
 
-			Assert.IsFalse(System.IO.File.Exists(expectedOutput));
+			Assert.IsFalse(System.IO.File.Exists(OutputFileName));
 		}
 
 		[Then("the output of the msbuild call should not match this regex:")]
